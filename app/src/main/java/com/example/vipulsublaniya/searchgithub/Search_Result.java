@@ -192,7 +192,6 @@ public class Search_Result extends AppCompatActivity {
                 urlConnection = (HttpURLConnection) url.openConnection();
 
                 //Method 2: To authorize api access while make http request
-//                urlConnection.setRequestProperty("Authorization", "OAuth " + "4e67064ae94f685df6862120c625ab484e07b82b");
 //                String basicAuth = "Basic "+Base64.encodeToString("kvipul:password".getBytes(), Base64.DEFAULT).replace("\n", "");
 //                urlConnection.setRequestProperty ("Authorization", basicAuth);
 
