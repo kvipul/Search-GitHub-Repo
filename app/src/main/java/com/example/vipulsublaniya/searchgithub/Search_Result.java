@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class Search_Result extends AppCompatActivity {
 
-    TextView count,pageNo;
+    TextView count,pageNo,apiLimitError;
     Button prev,next;
     JSONArray items;
     int page = 0;
@@ -52,6 +52,7 @@ public class Search_Result extends AppCompatActivity {
         prev = (Button) findViewById(R.id.prev);
         next = (Button) findViewById(R.id.next);
         repoListView = (ListView) findViewById(R.id.listView);
+        apiLimitError = (TextView) findViewById(R.id.apiLimitError);
 
 
         searchText = getIntent().getStringExtra("searchText");
@@ -75,6 +76,7 @@ public class Search_Result extends AppCompatActivity {
 
     class Atask extends AsyncTask<String,Void,Void> {
         private ProgressDialog pDialog;
+        boolean apiLimitExceeded = false;
 
         @Override
         protected void onPreExecute() {
@@ -135,8 +137,9 @@ public class Search_Result extends AppCompatActivity {
                                 + " : " + entry.getValue());
                     }
                 }
-                else
+                else {
                     inputStream = urlConnection.getInputStream();
+                }
 
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 String temp;
@@ -146,12 +149,18 @@ public class Search_Result extends AppCompatActivity {
                 Log.e("webapi json object",response);
 
 
-                //convert data string into JSONObject
-                JSONObject obj = (JSONObject) new JSONTokener(response).nextValue();
-                items = obj.getJSONArray("items");
+                if(response.contains("API rate limit exceeded")){
+//                    items= new JSONArray();
+//                    total_count = "0";
+                    apiLimitExceeded =true;
+                }else {
+                    //convert data string into JSONObject
+                    JSONObject obj = (JSONObject) new JSONTokener(response).nextValue();
+                    items = obj.getJSONArray("items");
 
-                total_count = obj.getString("total_count");
-                incomplete_results = obj.getString("incomplete_results");
+                    total_count = obj.getString("total_count");
+                    incomplete_results = obj.getString("incomplete_results");
+                }
 
                 urlConnection.disconnect();
             } catch (MalformedURLException | ProtocolException | JSONException e) {
@@ -165,7 +174,14 @@ public class Search_Result extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            setResultListView();
+            if(!apiLimitExceeded){
+                apiLimitError.setVisibility(View.INVISIBLE);
+                setResultListView();
+            }else{
+                repoListView.setAdapter(new ArrayAdapter<>(getBaseContext(), android.R.layout.simple_list_item_1, new ArrayList<>()));
+                apiLimitError.setVisibility(View.VISIBLE);
+                count.setText("API rate Limit Error!!Try after some time!");
+            }
             pDialog.dismiss();
         }
     }
@@ -192,7 +208,14 @@ public class Search_Result extends AppCompatActivity {
         }
 
         //parse total page in search result
-        int totalpage = Integer.parseInt(total_count)/5;
+        int tpcount = Integer.parseInt(total_count);
+        int totalpage;
+        if(tpcount%5==0){
+            totalpage = tpcount/5-1;
+        }else{
+            totalpage = tpcount/5;
+        }
+
         Log.e("total page, page", String.valueOf(totalpage)+", "+String.valueOf(page));
 
         //condition to enbable and disable nextpage button and prev page button
