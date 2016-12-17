@@ -57,27 +57,27 @@ public class MainSearchActivity extends AppCompatActivity {
 
         //Add value to all the spinners=========================================================================
         String[] a = new String[]{"Less than", "Greater than"};
-        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, a);
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item, a);
         limitSizeSpinner.setAdapter(adapter1);
 
         String[] b = new String[]{"KB", "MB", "GB"};
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, b);
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item, b);
         sizeDimenSpinner.setAdapter(adapter2);
 
         String[] c = new String[]{"More than", "Less than"};
-        ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, c);
+        ArrayAdapter<String> adapter3 = new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item, c);
         forkLimitSpinner.setAdapter(adapter3);
 
         String[] d = new String[]{"Include Only", "Exclude"};
-        ArrayAdapter<String> adapter4 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, d);
+        ArrayAdapter<String> adapter4 = new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item, d);
         languageIncludeSpinner.setAdapter(adapter4);
 
         String[] e = new String[]{"Best Match", "stars", "forks", "updated"};
-        ArrayAdapter<String> adapter5 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, e);
+        ArrayAdapter<String> adapter5 = new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item, e);
         sortFilter.setAdapter(adapter5);
 
         String[] f = new String[]{"Desc", "Asc"};
-        ArrayAdapter<String> adapter6 = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, f);
+        ArrayAdapter<String> adapter6 = new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item, f);
         orderBy.setAdapter(adapter6);
         //======================================================================================================
 
@@ -96,7 +96,7 @@ public class MainSearchActivity extends AppCompatActivity {
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
 
-                if (showFilters == false) {
+                if (!showFilters) {
                     clearAllFilter();
                     filters_layout.setVisibility(View.VISIBLE);
                     showFilters = true;
@@ -121,6 +121,7 @@ public class MainSearchActivity extends AppCompatActivity {
             }
         });
 
+        //search for repo
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,16 +133,21 @@ public class MainSearchActivity extends AppCompatActivity {
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
 
+                //check if input string is empty
                 String txt = searchText.getText().toString();
                 if(txt.isEmpty()){
                     Toast.makeText(MainSearchActivity.this,"Search Box can't be Empty!!", Toast.LENGTH_LONG ).show();
                     return;
                 }
 
+                //check if Internet is available
                 if(!isInternetConnected(getBaseContext())){
                     Toast.makeText(MainSearchActivity.this, "No Internet Connection!",Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+
+        //Since GitHub api provide flexibility to use filters, we just need to manipulate the searchText that we will send to API
 
                 //manipulation for size filter
                 String x = sizeOfRepo.getText().toString();
@@ -149,7 +155,7 @@ public class MainSearchActivity extends AppCompatActivity {
                 String x4 = "";
                 if(!x.isEmpty()){
                     String x1 = limitSizeSpinner.getSelectedItem().toString();
-                    if(x1=="Less than"){
+                    if(x1.equals("Less than")){
                         x4 += "<";
                     }else{
                         x4 += ">";
@@ -164,8 +170,6 @@ public class MainSearchActivity extends AppCompatActivity {
                         x3 += x;
                     }
                     txt+=("+size:"+x4+x3);
-
-
                 }
 
                 //manipulation for forks filter
@@ -212,10 +216,10 @@ public class MainSearchActivity extends AppCompatActivity {
                 //limit per page data to 5 entries
                 txt+="&per_page=5";
 
+
                 Intent i = new Intent(MainSearchActivity.this, Search_Result.class);
                 i.putExtra("searchText",txt);
                 startActivity(i);
-
             }
         });
     }
