@@ -81,7 +81,7 @@ public class Search_Result extends AppCompatActivity {
         pageNo.setText("Page " + String.valueOf(page + 1));
 
         if(total_count.equals("0")){
-            count.setText("No Data Matched! Try Again!");
+            count.setText("No Repository Found! Try Again!");
             count.setTextColor(Color.RED);
             prev.setEnabled(false);
             next.setEnabled(false);
