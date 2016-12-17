@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SearchGitHub</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_search__result">Search_Result</string>
+    <string name="title_activity_repository_details">Repository_details</string>
+</resources>
